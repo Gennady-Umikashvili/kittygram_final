@@ -1,26 +1,72 @@
-#  Как работать с репозиторием финального задания
+## Описание проекта
 
-## Что нужно сделать
+Сайт с возможностью публикации фотографий котов и их достижений.
 
-Настроить запуск проекта Kittygram в контейнерах и CI/CD с помощью GitHub Actions
+## Запуск проекта из образов с Docker hub
 
-## Как проверить работу с помощью автотестов
+Для запуска необходимо на создать папку проекта, например `kittygram` и перейти в нее:
 
-В корне репозитория создайте файл tests.yml со следующим содержимым:
-```yaml
-repo_owner: ваш_логин_на_гитхабе
-kittygram_domain: полная ссылка (https://доменное_имя) на ваш проект Kittygram
-taski_domain: полная ссылка (https://доменное_имя) на ваш проект Taski
-dockerhub_username: ваш_логин_на_докерхабе
+```shell notranslate position-relative overflow-auto
+mkdir kittygram
+cd kittygram
 ```
 
-Скопируйте содержимое файла `.github/workflows/main.yml` в файл `kittygram_workflow.yml` в корневой директории проекта.
+В папку проекта скачиваем файл `docker-compose.production.yml` и запускаем его:
 
-Для локального запуска тестов создайте виртуальное окружение, установите в него зависимости из backend/requirements.txt и запустите в корневой директории проекта `pytest`.
+```shell notranslate position-relative overflow-auto
+sudo docker compose -f docker-compose.production.yml up
+```
 
-## Чек-лист для проверки перед отправкой задания
+Произойдет скачивание образов, создание и включение контейнеров, создание томов и сети.
 
-- Проект Taski доступен по доменному имени, указанному в `tests.yml`.
-- Проект Kittygram доступен по доменному имени, указанному в `tests.yml`.
-- Пуш в ветку main запускает тестирование и деплой Kittygram, а после успешного деплоя вам приходит сообщение в телеграм.
-- В корне проекта есть файл `kittygram_workflow.yml`.
+## Запуск проекта из исходников GitHub
+
+Клонируем себе репозиторий:
+
+```shell notranslate position-relative overflow-auto
+git clone git@github.com:Gennady-Umikashvili/kittygram_final.git
+```
+
+Выполняем запуск:
+
+```shell notranslate position-relative overflow-auto
+sudo docker compose -f docker-compose.yml up
+```
+
+## После запуска: Миграции, сбор статистики
+
+После запуска необходимо выполнить сбор статистики и миграции бэкенда. Статистика фронтенда собирается во время запуска контейнера, после чего он останавливается.
+
+```shell notranslate position-relative overflow-auto
+sudo docker compose -f [имя-файла-docker-compose.yml] exec backend python manage.py migrate
+
+sudo docker compose -f [имя-файла-docker-compose.yml] exec backend python manage.py collectstatic
+
+sudo docker compose -f [имя-файла-docker-compose.yml] exec backend cp -r /app/collected_static/. /static/static/
+```
+
+И далее проект доступен на:
+
+```
+http://localhost:9000/
+```
+
+## Необходимые переменные окружения
+
+```shell notranslate position-relative overflow-auto
+POSTGRES_USER= <Желаемое_имя_пользователя_базы_данных>
+POSTGRES_PASSWORD= <Желаемый_пароль_пользователя_базы_данных>
+POSTGRES_DB= <Желаемое_имя_базы_данных>
+DB_HOST=
+DB_PORT= 
+SECRET_KEY = 
+DEBUG = 
+```
+
+## Остановка оркестра контейнеров
+
+В окне, где был запуск **Ctrl+С** или в другом окне:
+
+```shell notranslate position-relative overflow-auto
+sudo docker compose -f docker-compose.yml down
+```
