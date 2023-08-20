@@ -6,6 +6,7 @@ volumes:
   media_volume:
 
 services:
+
   db:
     image: postgres:13.10
     env_file: .env
@@ -19,7 +20,6 @@ services:
       - media_volume:/app/media/
     depends_on:
       - db
-
   frontend:
     image: gennadyumikashvili/kittygram_frontend
     env_file: .env
