@@ -70,3 +70,5 @@ DEBUG =
 ```shell notranslate position-relative overflow-auto
 sudo docker compose -f docker-compose.yml down
 ```
+### Автор
+Геннадий Умикашвили: [github](https://github.com/Gennady-Umikashvili)
